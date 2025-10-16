@@ -34,6 +34,29 @@ const Dashboard = () => {
     });
   };
 
+  // Detect current section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = document.querySelectorAll('[id^="section-"]');
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      sections.forEach((section, index) => {
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          setCurrentSection(index);
+        }
+      });
+    };
+
+    const scrollContainer = document.querySelector('[style*="overflowY"]');
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
 
   const mockProgressData = {
     daily: [70, 85, 60, 90, 75, 80, 65],
@@ -89,21 +112,25 @@ const Dashboard = () => {
       animationDelay: '20s'
     },
     navbar: {
-      height: '80px',
-      background: 'linear-gradient(135deg, rgba(23, 19, 22, 0.98), rgba(23, 19, 22, 0.95))',
-      backdropFilter: 'blur(25px)',
-      WebkitBackdropFilter: 'blur(25px)',
+      height: '70px',
+      background: 'linear-gradient(135deg, rgba(23, 19, 22, 0.85), rgba(15, 14, 16, 0.95))',
+      backdropFilter: 'blur(30px)',
+      WebkitBackdropFilter: 'blur(30px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 40px',
-      boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
-      borderBottom: '1px solid rgba(255, 138, 0, 0.15)',
+      padding: '0 50px',
+      margin: '15px 30px',
+      borderRadius: '50px',
+      boxShadow: '0 15px 50px rgba(0,0,0,0.6), 0 0 100px rgba(255, 138, 0, 0.1), inset 0 0 50px rgba(255, 138, 0, 0.05)',
+      border: '1px solid rgba(255, 138, 0, 0.2)',
       zIndex: 1000,
       position: 'fixed',
       top: 0,
       left: 0,
-      right: 0
+      right: 0,
+      transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      overflow: 'hidden'
     },
     navBrand: {
       fontSize: '26px',
@@ -115,7 +142,9 @@ const Dashboard = () => {
       letterSpacing: '-1px',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px'
+      gap: '10px',
+      transition: 'all 0.3s ease',
+      position: 'relative'
     },
     navMenu: {
       display: 'flex',
@@ -135,11 +164,13 @@ const Dashboard = () => {
       borderRadius: '50%',
       backgroundColor: 'transparent',
       color: 'var(--muted)',
-      border: 'none',
+      border: '1px solid rgba(255, 138, 0, 0.2)',
       cursor: 'pointer',
       fontSize: '18px',
       marginRight: '10px',
-      transition: 'background-color 0.3s'
+      transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      position: 'relative',
+      overflow: 'hidden'
     },
     profileButton: {
       width: '40px',
@@ -147,26 +178,33 @@ const Dashboard = () => {
       borderRadius: '50%',
       backgroundColor: 'var(--accent)',
       color: 'var(--background)',
-      border: 'none',
+      border: '1px solid rgba(255, 138, 0, 0.3)',
       cursor: 'pointer',
       fontSize: '18px',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      position: 'relative',
+      overflow: 'hidden'
     },
     scrollContainer: {
       height: '100vh',
       overflowY: 'auto',
       scrollBehavior: 'smooth',
-      paddingTop: '80px'
+      paddingTop: '100px'
     },
     section: {
-      minHeight: '100vh',
-      padding: '60px 40px',
+      minHeight: '80vh',
+      padding: '40px 30px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      '@media (max-width: 768px)': {
+        minHeight: '70vh',
+        padding: '30px 20px'
+      }
     },
     sectionIndicator: {
       position: 'fixed',
@@ -179,18 +217,30 @@ const Dashboard = () => {
       gap: '15px'
     },
     dot: {
-      width: '12px',
-      height: '12px',
+      width: '16px',
+      height: '16px',
       borderRadius: '50%',
-      backgroundColor: 'rgba(255, 138, 0, 0.3)',
+      backgroundColor: 'rgba(255, 138, 0, 0.2)',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      border: '2px solid transparent'
+      transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      border: '2px solid rgba(255, 138, 0, 0.3)',
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     activeDot: {
-      backgroundColor: 'var(--accent)',
-      border: '2px solid var(--accent-2)',
-      boxShadow: '0 0 20px rgba(255, 138, 0, 0.6)'
+      backgroundColor: 'transparent',
+      border: '2px solid var(--accent)',
+      boxShadow: '0 0 25px rgba(255, 138, 0, 0.8), inset 0 0 15px rgba(255, 138, 0, 0.2)'
+    },
+    goldenBall: {
+      width: '8px',
+      height: '8px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, #ffd700, #ffaa00)',
+      boxShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 25px rgba(255, 170, 0, 0.4)',
+      transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
     },
     heroSection: {
       background: 'transparent',
@@ -510,9 +560,44 @@ const Dashboard = () => {
         <div style={{...styles.bgOrb, ...styles.bgOrb3}}></div>
       </div>
       
-      {/* Fixed Navbar */}
-      <div style={styles.navbar}>
-        <div style={styles.navBrand} onClick={() => scrollToSection(0)}>
+      {/* Fixed Navbar with Shining Effect */}
+      <div 
+        style={styles.navbar}
+        onMouseEnter={(e) => {
+          e.target.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 150px rgba(255, 138, 0, 0.3), inset 0 0 80px rgba(255, 138, 0, 0.1)';
+          e.target.style.transform = 'translateY(-2px)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.boxShadow = '0 15px 50px rgba(0,0,0,0.6), 0 0 100px rgba(255, 138, 0, 0.1), inset 0 0 50px rgba(255, 138, 0, 0.05)';
+          e.target.style.transform = 'translateY(0)';
+        }}
+      >
+        {/* Shining Effect Overlay */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: '-100%',
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+            animation: 'shine 3s infinite',
+            pointerEvents: 'none'
+          }}
+        />
+        
+        <div 
+          style={styles.navBrand} 
+          onClick={() => scrollToSection(0)}
+          onMouseEnter={(e) => {
+            e.target.style.textShadow = '0 0 30px rgba(255, 138, 0, 0.8)';
+            e.target.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.textShadow = 'none';
+            e.target.style.transform = 'scale(1)';
+          }}
+        >
           <span style={{fontSize: '30px'}}>🎆</span>
           StudyBuddy
         </div>
@@ -527,16 +612,39 @@ const Dashboard = () => {
             style={styles.notificationButton} 
             onClick={() => setShowNotifications(!showNotifications)}
             title="Notifications"
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'rgba(255, 138, 0, 0.2)';
+              e.target.style.color = 'var(--accent)';
+              e.target.style.boxShadow = '0 0 20px rgba(255, 138, 0, 0.5)';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.color = 'var(--muted)';
+              e.target.style.boxShadow = 'none';
+              e.target.style.transform = 'scale(1)';
+            }}
           >
             🔔
           </button>
-          <button style={styles.profileButton} onClick={() => navigate('/profile')}>
+          <button 
+            style={styles.profileButton} 
+            onClick={() => navigate('/profile')}
+            onMouseEnter={(e) => {
+              e.target.style.boxShadow = '0 0 25px rgba(255, 138, 0, 0.8)';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.boxShadow = 'none';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
             {userName.charAt(0).toUpperCase()}
           </button>
         </div>
       </div>
 
-      {/* Section Navigation Dots */}
+      {/* Section Navigation Dots with Golden Ball */}
       <div style={styles.sectionIndicator}>
         {[0, 1, 2, 3, 4, 5].map((index) => (
           <div
@@ -554,7 +662,11 @@ const Dashboard = () => {
               'Quiz Generator',
               'Site Info'
             ][index]}
-          />
+          >
+            {currentSection === index && (
+              <div style={styles.goldenBall}></div>
+            )}
+          </div>
         ))}
       </div>
 
@@ -764,10 +876,10 @@ const Dashboard = () => {
         </div>
 
         {/* Section 6: Site Info & Navigation */}
-        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '100vh', justifyContent: 'space-between', padding: '60px 40px 40px' }}>
-          <div style={{...styles.sectionCard, maxWidth: '1200px', width: '100%', padding: '50px'}}>
+        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '80vh', justifyContent: 'space-between', padding: '40px 30px' }}>
+          <div style={{...styles.sectionCard, maxWidth: '1400px', width: '100%', padding: '60px 40px'}}>
             {/* Site Header */}
-            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
               <div style={{ fontSize: '48px', marginBottom: '20px' }}>🎆</div>
               <h2 style={{...styles.sectionTitle, fontSize: '36px', marginBottom: '15px'}}>StudyBuddy</h2>
               <p style={{ fontSize: '18px', color: 'var(--muted)', maxWidth: '600px', margin: '0 auto' }}>
@@ -776,59 +888,188 @@ const Dashboard = () => {
               </p>
             </div>
 
-            {/* Navigation Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '30px', marginBottom: '50px' }}>
-              {/* Study Tools */}
-              <div style={{ textAlign: 'left' }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', color: 'var(--accent)' }}>Study Tools</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/dashboard')}>🏠 Dashboard</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/schedule')}>📅 Schedule Generator</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/ai-tutor')}>🤖 AI Tutor</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/quiz')}>📝 Quiz Generator</span>
+            {/* Horizontal Navigation Layout */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '60px', marginBottom: '60px', flexWrap: 'wrap' }}>
+              {/* My Account */}
+              <div style={{ flex: '1', minWidth: '250px', textAlign: 'center' }}>
+                <h3 
+                  style={{ 
+                    fontSize: '24px', 
+                    fontWeight: 'bold', 
+                    marginBottom: '30px', 
+                    color: 'var(--accent)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.textShadow = '0 0 20px rgba(255, 138, 0, 0.8)';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.textShadow = 'none';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  My Account
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+                  {[
+                    { icon: '👤', text: 'Profile', path: '/profile' },
+                    { icon: '📚', text: 'My Schedules', path: '/my-schedules' },
+                    { icon: '🏆', text: 'My Quizzes', path: '/quizzes' },
+                    { icon: '❓', text: 'Help & Support', path: '/general-questions' }
+                  ].map((item, index) => (
+                    <span 
+                      key={index}
+                      style={{ 
+                        color: 'var(--muted)', 
+                        cursor: 'pointer', 
+                        transition: 'all 0.3s ease',
+                        fontSize: '16px',
+                        padding: '8px 16px',
+                        borderRadius: '20px'
+                      }} 
+                      onClick={() => navigate(item.path)}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = 'var(--accent)';
+                        e.target.style.backgroundColor = 'rgba(255, 138, 0, 0.1)';
+                        e.target.style.boxShadow = '0 0 15px rgba(255, 138, 0, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = 'var(--muted)';
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    >
+                      {item.icon} {item.text}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* My Account */}
-              <div style={{ textAlign: 'left' }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', color: 'var(--accent)' }}>My Account</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/profile')}>👤 Profile</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/my-schedules')}>📚 My Schedules</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/quizzes')}>🏆 My Quizzes</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/general-questions')}>❓ Help & Support</span>
+              {/* Study Tools */}
+              <div style={{ flex: '1', minWidth: '250px', textAlign: 'center' }}>
+                <h3 
+                  style={{ 
+                    fontSize: '24px', 
+                    fontWeight: 'bold', 
+                    marginBottom: '30px', 
+                    color: 'var(--accent)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.textShadow = '0 0 20px rgba(255, 138, 0, 0.8)';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.textShadow = 'none';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Study Tools
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+                  {[
+                    { icon: '🏠', text: 'Dashboard', path: '/dashboard' },
+                    { icon: '📅', text: 'Schedule Generator', path: '/schedule' },
+                    { icon: '🤖', text: 'AI Tutor', path: '/ai-tutor' },
+                    { icon: '📝', text: 'Quiz Generator', path: '/quiz' }
+                  ].map((item, index) => (
+                    <span 
+                      key={index}
+                      style={{ 
+                        color: 'var(--muted)', 
+                        cursor: 'pointer', 
+                        transition: 'all 0.3s ease',
+                        fontSize: '16px',
+                        padding: '8px 16px',
+                        borderRadius: '20px'
+                      }} 
+                      onClick={() => navigate(item.path)}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = 'var(--accent)';
+                        e.target.style.backgroundColor = 'rgba(255, 138, 0, 0.1)';
+                        e.target.style.boxShadow = '0 0 15px rgba(255, 138, 0, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = 'var(--muted)';
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    >
+                      {item.icon} {item.text}
+                    </span>
+                  ))}
                 </div>
               </div>
 
               {/* About StudyBuddy */}
-              <div style={{ textAlign: 'left' }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', color: 'var(--accent)' }}>About StudyBuddy</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }} onClick={() => navigate('/about')}>ℹ️ About Us</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }}>📧 Contact</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }}>🔒 Privacy Policy</span>
-                  <span style={{ color: 'var(--muted)', cursor: 'pointer', transition: 'color 0.3s' }}>📜 Terms of Service</span>
+              <div style={{ flex: '1', minWidth: '250px', textAlign: 'center' }}>
+                <h3 
+                  style={{ 
+                    fontSize: '24px', 
+                    fontWeight: 'bold', 
+                    marginBottom: '30px', 
+                    color: 'var(--accent)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.textShadow = '0 0 20px rgba(255, 138, 0, 0.8)';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.textShadow = 'none';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  About StudyBuddy
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+                  {[
+                    { icon: 'ℹ️', text: 'About Us', path: '/about' },
+                    { icon: '📧', text: 'Contact', path: '#' },
+                    { icon: '🔒', text: 'Privacy Policy', path: '#' },
+                    { icon: '📜', text: 'Terms of Service', path: '#' }
+                  ].map((item, index) => (
+                    <span 
+                      key={index}
+                      style={{ 
+                        color: 'var(--muted)', 
+                        cursor: 'pointer', 
+                        transition: 'all 0.3s ease',
+                        fontSize: '16px',
+                        padding: '8px 16px',
+                        borderRadius: '20px'
+                      }} 
+                      onClick={() => item.path !== '#' && navigate(item.path)}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = 'var(--accent)';
+                        e.target.style.backgroundColor = 'rgba(255, 138, 0, 0.1)';
+                        e.target.style.boxShadow = '0 0 15px rgba(255, 138, 0, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = 'var(--muted)';
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    >
+                      {item.icon} {item.text}
+                    </span>
+                  ))}
                 </div>
               </div>
+            </div>
 
-              {/* Quick Actions */}
-              <div style={{ textAlign: 'left' }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', color: 'var(--accent)' }}>Quick Actions</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                  <button 
-                    style={{...styles.actionButton, padding: '12px 24px', fontSize: '14px'}}
-                    onClick={() => scrollToSection(0)}
-                  >
-                    Back to Top
-                  </button>
-                  <button 
-                    style={{...styles.actionButton, padding: '12px 24px', fontSize: '14px', background: 'linear-gradient(135deg, var(--accent-2), var(--accent))'}}
-                    onClick={() => navigate('/schedule')}
-                  >
-                    Quick Schedule
-                  </button>
-                </div>
-              </div>
+            {/* Back to Top Button */}
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <button 
+                style={{...styles.actionButton, padding: '15px 40px', fontSize: '16px'}}
+                onClick={() => scrollToSection(0)}
+              >
+                Back to Top
+              </button>
             </div>
 
             {/* Footer */}

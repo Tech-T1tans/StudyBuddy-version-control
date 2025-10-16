@@ -16,7 +16,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="%23ff8a00" opacity="0.8"/><circle cx="10" cy="10" r="3" fill="%23fff8ef"/></svg>'), auto;
+  cursor: url('./assets/cursor.cur'), auto;
+}
+
+button, a, [role="button"], .clickable {
+  cursor: url('./assets/pointer.cur'), pointer !important;
 }
 
 body {
@@ -272,5 +276,15 @@ input:focus, textarea:focus, select:focus {
   50% {
     box-shadow: 0 20px 70px rgba(0,0,0,0.5),
                 0 0 120px rgba(255, 138, 0, 0.1);
+  }
+}
+
+/* Shining Effect Animation */
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
   }
 }
