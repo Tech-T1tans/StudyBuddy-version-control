@@ -4,15 +4,49 @@ import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('Student');
+  const [isNewUser, setIsNewUser] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+
+  // Scrollbar width calculation to prevent layout shift
+  const getScrollbarWidth = () => {
+    const div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '100px';
+    div.style.overflow = 'scroll';
+    div.style.position = 'absolute';
+    div.style.top = '-9999px';
+    document.body.appendChild(div);
+    const width = div.offsetWidth - div.clientWidth;
+    div.remove();
+    return width;
+  };
+
+  // Handle chat open/close with body scroll lock
+  const handleChatToggle = (isOpen) => {
+    if (isOpen) {
+      const scrollbarWidth = getScrollbarWidth();
+      document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+      document.body.classList.add('chat-open');
+    } else {
+      document.body.classList.remove('chat-open');
+      document.documentElement.style.removeProperty('--scrollbar-width');
+    }
+    setShowChatbot(isOpen);
+  };
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userType = localStorage.getItem('userType'); // 'signup' or 'login'
+    
     if (user.name) {
       setUserName(user.name);
     }
+    
+    // Check if user came from signup (new user) or login (returning user)
+    setIsNewUser(userType === 'signup');
 
     // Close notifications when clicking outside
     const handleClickOutside = (event) => {
@@ -117,9 +151,9 @@ const Dashboard = () => {
     },
     navbar: {
       height: '70px',
-      background: 'linear-gradient(135deg, rgba(23, 19, 22, 0.85), rgba(15, 14, 16, 0.95))',
-      backdropFilter: 'blur(30px)',
-      WebkitBackdropFilter: 'blur(30px)',
+      background: 'linear-gradient(135deg, rgba(23, 19, 22, 0.7), rgba(15, 14, 16, 0.75))',
+      backdropFilter: 'blur(5px)',
+      WebkitBackdropFilter: 'blur(20px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -391,7 +425,7 @@ const Dashboard = () => {
     robotChatbot: {
       position: 'fixed',
       bottom: '30px',
-      right: '30px',
+      left: '30px',
       width: '60px',
       height: '60px',
       backgroundColor: 'var(--accent)',
@@ -399,7 +433,7 @@ const Dashboard = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-            zIndex: 1000,
+      zIndex: 1000,
       boxShadow: '0 4px 20px rgba(255, 138, 0, 0.4)',
       transition: 'all 0.3s ease',
       animation: 'robotFloat 3s ease-in-out infinite'
@@ -467,19 +501,32 @@ const Dashboard = () => {
       fontSize: '14px',
       color: 'var(--muted)'
     },
-    chatbot: {
+    chatOverlay: {
       position: 'fixed',
-      bottom: '80px',
-      right: '120px',
+      inset: 0,
+      background: 'rgba(0, 0, 0, 0.3)',
+      display: 'flex',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-end',
+      padding: '16px',
+      zIndex: 9999,
+      pointerEvents: 'auto'
+    },
+    chatPanel: {
       width: '380px',
-      height: '480px',
+      maxWidth: 'calc(100vw - 32px)',
+      height: '450px',
+      maxHeight: 'calc(100vh - 120px)',
       backgroundColor: 'var(--surface)',
       borderRadius: '25px',
       boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 100px rgba(255, 138, 0, 0.2)',
       border: '3px solid var(--accent)',
       display: 'flex',
       flexDirection: 'column',
-      zIndex: 150,
+      overflow: 'hidden',
+      position: 'relative',
+      marginLeft: '14px',
+      marginBottom: '80px',
       animation: 'slideIn 0.3s ease-out',
       '&::before': {
         content: '""',
@@ -506,7 +553,9 @@ const Dashboard = () => {
     chatBody: {
       flex: 1,
       padding: '20px',
-      overflowY: 'auto'
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      minHeight: 0
     },
     chatInput: {
       display: 'flex',
@@ -514,17 +563,17 @@ const Dashboard = () => {
       borderTop: '1px solid #e0e0e0'
     },
     notificationDropdown: {
-      position: 'absolute',
-      top: '70px',
-      right: '80px',
+      position: 'fixed',
+      top: '80px',
+      right: '20px',
       width: '350px',
       backgroundColor: 'var(--surface)',
-      borderRadius: '15px',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-      zIndex: 200,
+      borderRadius: '25px',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 100px rgba(255, 138, 0, 0.2)',
+      zIndex: 10000,
       maxHeight: '400px',
       overflowY: 'auto',
-      border: '1px solid var(--muted)'
+      border: '3px solid var(--accent)'
     },
     notificationHeader: {
       padding: '15px 20px',
@@ -610,12 +659,12 @@ const Dashboard = () => {
           <span style={{fontSize: '30px'}}>🎆</span>
           StudyBuddy
         </div>
-        <div style={styles.navMenu}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
           <span style={styles.navItem} onClick={() => scrollToSection(0)}>Home</span>
           <span style={styles.navItem} onClick={() => scrollToSection(2)}>Schedule</span>
           <span style={styles.navItem} onClick={() => scrollToSection(4)}>Quiz</span>
           <span style={styles.navItem} onClick={() => scrollToSection(3)}>AI Tutor</span>
-          <span style={styles.navItem} onClick={() => navigate('/about')}>About</span>
+          <span style={styles.navItem} onClick={() => navigate('/about')}>About Us</span>
           <button 
             className="notification-area"
             style={styles.notificationButton} 
@@ -686,26 +735,125 @@ const Dashboard = () => {
         <div id="section-0" style={{ ...styles.section, ...styles.heroSection }}>
           <div style={styles.heroCard}>
             <div style={styles.heroGlow}></div>
-            <h1 style={styles.greeting}>Welcome Back, {userName}! 👋</h1>
-            <p style={styles.dailyTip}>Ready to continue your amazing learning journey?</p>
-            <div style={{...styles.tipBox, background: 'rgba(255, 138, 0, 0.1)', borderLeft: '4px solid var(--accent)', borderRadius: '12px'}}>
+            <h1 style={styles.greeting}>
+              {isNewUser ? `Welcome, ${userName}! 👋` : `Welcome Back, ${userName}! 👋`}
+            </h1>
+              <p style={styles.dailyTip}>Ready to continue your amazing learning journey?</p>
+            <div style={{...styles.tipBox, background: 'rgba(255, 138, 0, 0.1)', borderLeft: '4px solid var(--accent)', borderRadius: '12px', marginBottom: '0px'}}>
               💡 Today's Focus: "Success is the sum of small efforts repeated day in and day out." - Robert Collier
             </div>
             {/* Scroll Down Animation */}
-            <div style={{ marginTop: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-              <p style={{ fontSize: '16px', color: 'var(--muted)', textAlign: 'center' }}>
-                Scroll down to explore your dashboard
-              </p>
-              <div 
-                style={{
-                  fontSize: '24px',
-                  animation: 'bounce 2s infinite',
-                  filter: 'drop-shadow(0 0 15px rgba(255, 138, 0, 0.8))',
-                  cursor: 'pointer'
-                }}
-                onClick={() => scrollToSection(1)}
-              >
-                👇
+            <div style={{ marginTop: '-5px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div 
+                  style={{ 
+                    position: 'relative',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '30px',
+                    height: '30px'
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute',
+                    width: '14px',
+                    height: '4px',
+                    opacity: 0,
+                    transform: 'scale(0.3)',
+                    animation: 'moveChevron1 3s ease-out infinite'
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      height: '100%',
+                      width: '50%',
+                      background: '#c0c0c0',
+                      transform: 'skewY(30deg)',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 138, 0, 0.6))'
+                    }}></div>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      height: '100%',
+                      width: '50%',
+                      background: '#c0c0c0',
+                      transform: 'skewY(-30deg)',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 138, 0, 0.6))'
+                    }}></div>
+                  </div>
+                  <div style={{
+                    position: 'absolute',
+                    width: '14px',
+                    height: '4px',
+                    opacity: 0,
+                    transform: 'scale(0.3)',
+                    animation: 'moveChevron2 3s ease-out infinite'
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      height: '100%',
+                      width: '50%',
+                      background: '#c0c0c0',
+                      transform: 'skewY(30deg)',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 138, 0, 0.6))'
+                    }}></div>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      height: '100%',
+                      width: '50%',
+                      background: '#c0c0c0',
+                      transform: 'skewY(-30deg)',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 138, 0, 0.6))'
+                    }}></div>
+                  </div>
+                  <div style={{
+                    position: 'absolute',
+                    width: '14px',
+                    height: '4px',
+                    opacity: 0,
+                    transform: 'scale(0.3)',
+                    animation: 'moveChevron3 3s ease-out infinite'
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      height: '100%',
+                      width: '50%',
+                      background: '#c0c0c0',
+                      transform: 'skewY(30deg)',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 138, 0, 0.6))'
+                    }}></div>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      height: '100%',
+                      width: '50%',
+                      background: '#c0c0c0',
+                      transform: 'skewY(-30deg)',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 138, 0, 0.6))'
+                    }}></div>
+                  </div>
+                </div>
+                <p 
+                  style={{ 
+                    fontSize: '16px', 
+                    color: 'var(--muted)', 
+                    textAlign: 'center',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => scrollToSection(1)}
+                >
+                  Scroll down to explore more!
+                </p>
               </div>
             </div>
           </div>
@@ -894,10 +1042,10 @@ const Dashboard = () => {
         </div>
 
         {/* Section 6: Site Info & Navigation */}
-        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '45vh', justifyContent: 'center', padding: '20px 15px' }}>
-          <div style={{...styles.sectionCard, maxWidth: '1400px', width: '100%', padding: '60px 40px'}}>
+        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '30vh', justifyContent: 'center', padding: '15px 10px' }}>
+          <div style={{...styles.sectionCard, maxWidth: '1200px', width: '100%', padding: '40px 30px'}}>
             {/* Site Header */}
-            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
               <div style={{ fontSize: '48px', marginBottom: '20px' }}>🎆</div>
               <h2 style={{...styles.sectionTitle, fontSize: '36px', marginBottom: '15px'}}>StudyBuddy</h2>
               <p style={{ fontSize: '18px', color: 'var(--muted)', maxWidth: '600px', margin: '0 auto' }}>
@@ -907,7 +1055,7 @@ const Dashboard = () => {
             </div>
 
             {/* Horizontal Navigation Layout */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '60px', marginBottom: '60px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '40px', marginBottom: '40px', flexWrap: 'wrap' }}>
               {/* My Account */}
               <div style={{ flex: '1', minWidth: '250px', textAlign: 'center' }}>
                 <h3 
@@ -1106,6 +1254,29 @@ const Dashboard = () => {
       {/* Notification Dropdown */}
       {showNotifications && (
         <div className="notification-area" style={styles.notificationDropdown}>
+          {/* Speech bubble tail pointing to notification button */}
+          <div style={{
+            position: 'absolute',
+            top: '-18px',
+            right: '30px',
+            width: '0',
+            height: '0',
+            borderLeft: '18px solid transparent',
+            borderRight: '18px solid transparent',
+            borderBottom: '18px solid var(--accent)',
+            zIndex: 10000
+          }}></div>
+          <div style={{
+            position: 'absolute',
+            top: '-15px',
+            right: '33px',
+            width: '0',
+            height: '0',
+            borderLeft: '15px solid transparent',
+            borderRight: '15px solid transparent',
+            borderBottom: '15px solid var(--surface)',
+            zIndex: 10001
+          }}></div>
           <div style={styles.notificationHeader}>
             🔔 Notifications
           </div>
@@ -1143,7 +1314,7 @@ const Dashboard = () => {
       <div 
         className="robot-float"
         style={styles.robotChatbot}
-        onClick={() => setShowChatbot(!showChatbot)}
+        onClick={() => handleChatToggle(!showChatbot)}
         onMouseEnter={(e) => {
           e.target.style.transform = 'scale(1.15) translateY(-5px)';
           e.target.style.boxShadow = '0 8px 30px rgba(255, 138, 0, 0.6)';
@@ -1156,123 +1327,173 @@ const Dashboard = () => {
         <div className="robot-blink" style={styles.robotFace}>🤖</div>
       </div>
 
-      {/* Manga-Style Chatbot Window */}
+      {/* Chat Overlay - Full Viewport */}
       {showChatbot && (
-        <div style={{
-          ...styles.chatbot,
-          backgroundColor: 'var(--surface)',
-          color: 'var(--text)',
-          position: 'relative'
-        }}>
-          {/* Speech bubble tail */}
-          <div style={{
-            position: 'absolute',
-            bottom: '-18px',
-            right: '40px',
-            width: '0',
-            height: '0',
-            borderLeft: '18px solid transparent',
-            borderRight: '18px solid transparent',
-            borderTop: '18px solid var(--accent)',
-            zIndex: 151
-          }}></div>
-          <div style={{
-            position: 'absolute',
-            bottom: '-15px',
-            right: '43px',
-            width: '0',
-            height: '0',
-            borderLeft: '15px solid transparent',
-            borderRight: '15px solid transparent',
-            borderTop: '15px solid var(--surface)',
-            zIndex: 152
-          }}></div>
-
-          <div style={{
-            ...styles.chatHeader,
-            background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
-            color: 'var(--background)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '20px' }}>🤖</span>
-              <span style={{ fontWeight: 'bold', fontSize: '18px' }}>StudyBuddy AI</span>
-            </div>
-            <button 
-              onClick={() => setShowChatbot(false)}
-              style={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                border: 'none', 
-                color: 'var(--background)', 
-                fontSize: '22px', 
-                cursor: 'pointer',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-              onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-            >
-              ×
-            </button>
-          </div>
-          <div style={{...styles.chatBody, backgroundColor: 'var(--surface)', borderRadius: '0 0 22px 22px'}}>
+        <div 
+          style={styles.chatOverlay}
+          onClick={(e) => e.target === e.currentTarget && handleChatToggle(false)}
+        >
+          <div style={styles.chatPanel} role="dialog" aria-modal="true">
+            {/* Speech bubble tail */}
             <div style={{
-              backgroundColor: 'rgba(255, 138, 0, 0.1)',
-              padding: '15px',
-              borderRadius: '15px',
-              border: '2px solid rgba(255, 138, 0, 0.2)',
-              marginBottom: '15px'
+              position: 'absolute',
+              bottom: '-18px',
+              left: '30px',
+              width: '0',
+              height: '0',
+              borderLeft: '18px solid transparent',
+              borderRight: '18px solid transparent',
+              borderTop: '18px solid var(--accent)',
+              zIndex: 10000
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: '-15px',
+              left: '33px',
+              width: '0',
+              height: '0',
+              borderLeft: '15px solid transparent',
+              borderRight: '15px solid transparent',
+              borderTop: '15px solid var(--surface)',
+              zIndex: 10001
+            }}></div>
+
+            {/* Chat Header */}
+            <header style={{
+              ...styles.chatHeader,
+              background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+              color: 'var(--background)',
+              flexShrink: 0
             }}>
-              <p style={{ color: 'var(--text)', fontSize: '16px', lineHeight: '1.5' }}>
-                🎯 Hi there! I'm your AI Study Assistant. I'm here to help you with:
-              </p>
-              <ul style={{ marginTop: '10px', paddingLeft: '20px', color: 'var(--muted)' }}>
-                <li>Study planning & scheduling</li>
-                <li>Subject explanations</li>
-                <li>Quiz generation</li>
-                <li>Learning strategies</li>
-              </ul>
-              <p style={{ color: 'var(--accent)', marginTop: '10px', fontWeight: 'bold' }}>
-                What would you like to study today?
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '20px' }}>🤖</span>
+                <span style={{ fontWeight: 'bold', fontSize: '18px' }}>StudyBuddy AI</span>
+              </div>
+              <button 
+                onClick={() => handleChatToggle(false)}
+                style={{ 
+                  background: 'rgba(255, 255, 255, 0.2)', 
+                  border: 'none', 
+                  color: 'var(--background)', 
+                  fontSize: '22px', 
+                  cursor: 'pointer',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+                onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+              >
+                ×
+              </button>
+            </header>
+
+            {/* Chat Body - Scrollable Content Area */}
+            <div style={styles.chatBody}>
+              <div style={{
+                backgroundColor: 'rgba(255, 138, 0, 0.1)',
+                padding: '15px',
+                borderRadius: '15px',
+                border: '2px solid rgba(255, 138, 0, 0.2)',
+                marginBottom: '15px'
+              }}>
+                <p style={{ color: 'var(--text)', fontSize: '16px', lineHeight: '1.5', marginBottom: '10px' }}>
+                  🎯 Hi there! I'm your AI Study Assistant. I'm here to help you with:
+                </p>
+                <ul style={{ marginTop: '8px', paddingLeft: '20px', color: 'var(--muted)', lineHeight: '1.6' }}>
+                  <li>Study planning & scheduling</li>
+                  <li>Subject explanations</li>
+                  <li>Quiz generation & practice</li>
+                  <li>Learning strategies</li>
+                </ul>
+                <p style={{ color: 'var(--accent)', marginTop: '12px', fontWeight: 'bold', fontSize: '15px' }}>
+                  What would you like to study today?
+                </p>
+              </div>
+              
+              {/* Sample messages to show scrolling */}
+              <div style={{
+                backgroundColor: 'rgba(255, 138, 0, 0.05)',
+                padding: '12px',
+                borderRadius: '12px',
+                marginBottom: '10px',
+                borderLeft: '3px solid var(--accent)'
+              }}>
+                <p style={{ color: 'var(--text)', fontSize: '14px', lineHeight: '1.4' }}>
+                  💡 <strong>Quick Tip:</strong> Try asking me about any subject you're studying. I can help explain concepts, create practice questions, or suggest study strategies!
+                </p>
+              </div>
+
+              <div style={{
+                backgroundColor: 'rgba(255, 138, 0, 0.05)',
+                padding: '12px',
+                borderRadius: '12px',
+                marginBottom: '10px',
+                borderLeft: '3px solid var(--accent-2)'
+              }}>
+                <p style={{ color: 'var(--text)', fontSize: '14px', lineHeight: '1.4' }}>
+                  📚 <strong>Popular Commands:</strong>
+                </p>
+                <p style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '5px', lineHeight: '1.4' }}>
+                  • "Create a quiz on [topic]"<br/>
+                  • "Explain [concept]"<br/>
+                  • "Help me plan my schedule"
+                </p>
+              </div>
             </div>
-          </div>
-          <div style={{...styles.chatInput, backgroundColor: 'var(--surface)', borderRadius: '0 0 22px 22px'}}>
-            <input 
-              type="text" 
-              placeholder="Ask me anything about your studies..." 
-              style={{ 
-                flex: 1, 
-                padding: '12px 16px', 
-                border: '2px solid rgba(255, 138, 0, 0.3)', 
-                borderRadius: '25px',
-                backgroundColor: 'var(--background)',
-                color: 'var(--text)',
-                fontSize: '14px',
-                outline: 'none'
-              }}
-            />
-            <button style={{ 
-              marginLeft: '12px', 
-              padding: '12px 24px', 
-              backgroundColor: 'var(--accent)', 
-              color: 'var(--background)', 
-              border: 'none', 
-              borderRadius: '25px', 
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '14px',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-            >
-              Send
-            </button>
+
+            {/* Chat Input */}
+            <footer style={{...styles.chatInput, backgroundColor: 'var(--surface)', borderRadius: '0 0 22px 22px', flexShrink: 0}}>
+              <input 
+                type="text" 
+                placeholder="Ask me anything about your studies..." 
+                style={{ 
+                  flex: 1, 
+                  padding: '12px 16px', 
+                  border: '2px solid rgba(255, 138, 0, 0.3)', 
+                  borderRadius: '25px', 
+                  backgroundColor: 'var(--background)', 
+                  color: 'var(--text)', 
+                  fontSize: '14px', 
+                  outline: 'none' 
+                }} 
+              />
+              <button 
+                style={{ 
+                  marginLeft: '12px', 
+                  padding: '12px 20px', 
+                  backgroundColor: 'var(--accent)', 
+                  color: 'var(--background)', 
+                  border: 'none', 
+                  borderRadius: '25px', 
+                  cursor: 'pointer', 
+                  fontWeight: 'bold', 
+                  fontSize: '14px', 
+                  transition: 'all 0.3s ease',
+                  minWidth: '70px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(255, 138, 0, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(255, 138, 0, 0.5)';
+                  e.target.style.backgroundColor = '#ff9500';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 2px 8px rgba(255, 138, 0, 0.3)';
+                  e.target.style.backgroundColor = 'var(--accent)';
+                }}
+              >
+                Send
+              </button>
+            </footer>
           </div>
         </div>
       )}

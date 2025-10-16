@@ -194,7 +194,7 @@ const AboutUsScreen = () => {
       <div style={styles.header}>
         <button 
           style={styles.backButton} 
-          onClick={() => navigate('/welcome')}
+          onClick={() => navigate(-1)}
         >
           ← Back
         </button>
