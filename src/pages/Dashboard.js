@@ -142,8 +142,7 @@ const Dashboard = () => {
       background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
-      cursor: 'pointer',
-      letterSpacing: '-1px',
+            letterSpacing: '-1px',
       display: 'flex',
       alignItems: 'center',
       gap: '10px',
@@ -169,8 +168,7 @@ const Dashboard = () => {
       backgroundColor: 'transparent',
       color: 'var(--muted)',
       border: '1px solid rgba(255, 138, 0, 0.2)',
-      cursor: 'pointer',
-      fontSize: '18px',
+            fontSize: '18px',
       marginRight: '10px',
       transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       position: 'relative',
@@ -183,8 +181,7 @@ const Dashboard = () => {
       backgroundColor: 'var(--accent)',
       color: 'var(--background)',
       border: '1px solid rgba(255, 138, 0, 0.3)',
-      cursor: 'pointer',
-      fontSize: '18px',
+            fontSize: '18px',
       fontWeight: 'bold',
       transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       position: 'relative',
@@ -205,10 +202,6 @@ const Dashboard = () => {
       alignItems: 'center',
       position: 'relative',
       boxSizing: 'border-box',
-      '@media (max-width: 768px)': {
-        minHeight: '70vh',
-        padding: '30px 20px'
-      }
     },
     sectionIndicator: {
       position: 'fixed',
@@ -225,8 +218,7 @@ const Dashboard = () => {
       height: '16px',
       borderRadius: '50%',
       backgroundColor: 'rgba(255, 138, 0, 0.2)',
-      cursor: 'pointer',
-      transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       border: '2px solid rgba(255, 138, 0, 0.3)',
       position: 'relative',
       display: 'flex',
@@ -407,8 +399,7 @@ const Dashboard = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      cursor: 'pointer',
-      zIndex: 1000,
+            zIndex: 1000,
       boxShadow: '0 4px 20px rgba(255, 138, 0, 0.4)',
       transition: 'all 0.3s ease',
       animation: 'robotFloat 3s ease-in-out infinite'
@@ -478,25 +469,39 @@ const Dashboard = () => {
     },
     chatbot: {
       position: 'fixed',
-      bottom: '20px',
-      right: '20px',
-      width: '350px',
-      height: '450px',
-      backgroundColor: 'white',
-      borderRadius: '15px',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+      bottom: '80px',
+      right: '120px',
+      width: '380px',
+      height: '480px',
+      backgroundColor: 'var(--surface)',
+      borderRadius: '25px',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 100px rgba(255, 138, 0, 0.2)',
+      border: '3px solid var(--accent)',
       display: 'flex',
       flexDirection: 'column',
-      zIndex: 200
+      zIndex: 150,
+      animation: 'slideIn 0.3s ease-out',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        bottom: '-15px',
+        right: '30px',
+        width: '0',
+        height: '0',
+        borderLeft: '15px solid transparent',
+        borderRight: '15px solid transparent',
+        borderTop: '15px solid var(--accent)'
+      }
     },
     chatHeader: {
-      backgroundColor: '#667eea',
-      color: 'white',
-      padding: '15px',
-      borderRadius: '15px 15px 0 0',
+      backgroundColor: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+      color: 'var(--background)',
+      padding: '20px',
+      borderRadius: '22px 22px 0 0',
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center'
+      alignItems: 'center',
+      borderBottom: '2px solid rgba(255, 138, 0, 0.3)'
     },
     chatBody: {
       flex: 1,
@@ -686,13 +691,22 @@ const Dashboard = () => {
             <div style={{...styles.tipBox, background: 'rgba(255, 138, 0, 0.1)', borderLeft: '4px solid var(--accent)', borderRadius: '12px'}}>
               💡 Today's Focus: "Success is the sum of small efforts repeated day in and day out." - Robert Collier
             </div>
-            <div style={{ marginTop: '40px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-              <button style={styles.actionButton} onClick={() => scrollToSection(1)}>
-                View Dashboard
-              </button>
-              <button style={{...styles.actionButton, background: 'linear-gradient(135deg, var(--accent-2), var(--accent))'}} onClick={() => scrollToSection(2)}>
-                Quick Start
-              </button>
+            {/* Scroll Down Animation */}
+            <div style={{ marginTop: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+              <p style={{ fontSize: '16px', color: 'var(--muted)', textAlign: 'center' }}>
+                Scroll down to explore your dashboard
+              </p>
+              <div 
+                style={{
+                  fontSize: '24px',
+                  animation: 'bounce 2s infinite',
+                  filter: 'drop-shadow(0 0 15px rgba(255, 138, 0, 0.8))',
+                  cursor: 'pointer'
+                }}
+                onClick={() => scrollToSection(1)}
+              >
+                👇
+              </div>
             </div>
           </div>
         </div>
@@ -880,7 +894,7 @@ const Dashboard = () => {
         </div>
 
         {/* Section 6: Site Info & Navigation */}
-        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '60vh', justifyContent: 'center', padding: '30px 20px' }}>
+        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '45vh', justifyContent: 'center', padding: '20px 15px' }}>
           <div style={{...styles.sectionCard, maxWidth: '1400px', width: '100%', padding: '60px 40px'}}>
             {/* Site Header */}
             <div style={{ textAlign: 'center', marginBottom: '60px' }}>
@@ -1125,70 +1139,138 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* 3D Robot Chatbot - Hide when chat is open */}
-      {!showChatbot && (
-        <div 
-          className="robot-float"
-          style={styles.robotChatbot}
-          onClick={() => setShowChatbot(!showChatbot)}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'scale(1.15) translateY(-5px)';
-            e.target.style.boxShadow = '0 8px 30px rgba(255, 138, 0, 0.6)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'scale(1) translateY(0px)';
-            e.target.style.boxShadow = '0 4px 20px rgba(255, 138, 0, 0.4)';
-          }}
-        >
-          <div className="robot-blink" style={styles.robotFace}>🤖</div>
-        </div>
-      )}
+      {/* 3D Robot Chatbot - Always visible */}
+      <div 
+        className="robot-float"
+        style={styles.robotChatbot}
+        onClick={() => setShowChatbot(!showChatbot)}
+        onMouseEnter={(e) => {
+          e.target.style.transform = 'scale(1.15) translateY(-5px)';
+          e.target.style.boxShadow = '0 8px 30px rgba(255, 138, 0, 0.6)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = 'scale(1) translateY(0px)';
+          e.target.style.boxShadow = '0 4px 20px rgba(255, 138, 0, 0.4)';
+        }}
+      >
+        <div className="robot-blink" style={styles.robotFace}>🤖</div>
+      </div>
 
-      {/* Chatbot Window */}
+      {/* Manga-Style Chatbot Window */}
       {showChatbot && (
         <div style={{
           ...styles.chatbot,
           backgroundColor: 'var(--surface)',
-          color: 'var(--text)'
+          color: 'var(--text)',
+          position: 'relative'
         }}>
+          {/* Speech bubble tail */}
+          <div style={{
+            position: 'absolute',
+            bottom: '-18px',
+            right: '40px',
+            width: '0',
+            height: '0',
+            borderLeft: '18px solid transparent',
+            borderRight: '18px solid transparent',
+            borderTop: '18px solid var(--accent)',
+            zIndex: 151
+          }}></div>
+          <div style={{
+            position: 'absolute',
+            bottom: '-15px',
+            right: '43px',
+            width: '0',
+            height: '0',
+            borderLeft: '15px solid transparent',
+            borderRight: '15px solid transparent',
+            borderTop: '15px solid var(--surface)',
+            zIndex: 152
+          }}></div>
+
           <div style={{
             ...styles.chatHeader,
-            backgroundColor: 'var(--accent)',
-            color: 'var(--text)'
+            background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+            color: 'var(--background)'
           }}>
-            <span style={{ fontWeight: 'bold' }}>AI Study Assistant</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '20px' }}>🤖</span>
+              <span style={{ fontWeight: 'bold', fontSize: '18px' }}>StudyBuddy AI</span>
+            </div>
             <button 
               onClick={() => setShowChatbot(false)}
-              style={{ background: 'none', border: 'none', color: 'var(--text)', fontSize: '20px', cursor: 'pointer' }}
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.2)', 
+                border: 'none', 
+                color: 'var(--background)', 
+                fontSize: '22px', 
+                cursor: 'pointer',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+              onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
             >
               ×
             </button>
           </div>
-          <div style={styles.chatBody}>
-            <p style={{ color: 'var(--muted)' }}>Hi! I'm your AI study assistant. How can I help you with your studies today? 🤖</p>
+          <div style={{...styles.chatBody, backgroundColor: 'var(--surface)', borderRadius: '0 0 22px 22px'}}>
+            <div style={{
+              backgroundColor: 'rgba(255, 138, 0, 0.1)',
+              padding: '15px',
+              borderRadius: '15px',
+              border: '2px solid rgba(255, 138, 0, 0.2)',
+              marginBottom: '15px'
+            }}>
+              <p style={{ color: 'var(--text)', fontSize: '16px', lineHeight: '1.5' }}>
+                🎯 Hi there! I'm your AI Study Assistant. I'm here to help you with:
+              </p>
+              <ul style={{ marginTop: '10px', paddingLeft: '20px', color: 'var(--muted)' }}>
+                <li>Study planning & scheduling</li>
+                <li>Subject explanations</li>
+                <li>Quiz generation</li>
+                <li>Learning strategies</li>
+              </ul>
+              <p style={{ color: 'var(--accent)', marginTop: '10px', fontWeight: 'bold' }}>
+                What would you like to study today?
+              </p>
+            </div>
           </div>
-          <div style={styles.chatInput}>
+          <div style={{...styles.chatInput, backgroundColor: 'var(--surface)', borderRadius: '0 0 22px 22px'}}>
             <input 
               type="text" 
-              placeholder="Type your message..." 
+              placeholder="Ask me anything about your studies..." 
               style={{ 
                 flex: 1, 
-                padding: '10px', 
-                border: '1px solid var(--muted)', 
-                borderRadius: '5px',
+                padding: '12px 16px', 
+                border: '2px solid rgba(255, 138, 0, 0.3)', 
+                borderRadius: '25px',
                 backgroundColor: 'var(--background)',
-                color: 'var(--text)'
+                color: 'var(--text)',
+                fontSize: '14px',
+                outline: 'none'
               }}
             />
             <button style={{ 
-              marginLeft: '10px', 
-              padding: '10px 20px', 
+              marginLeft: '12px', 
+              padding: '12px 24px', 
               backgroundColor: 'var(--accent)', 
-              color: 'var(--text)', 
+              color: 'var(--background)', 
               border: 'none', 
-              borderRadius: '5px', 
-              cursor: 'pointer' 
-            }}>
+              borderRadius: '25px', 
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+            >
               Send
             </button>
           </div>
