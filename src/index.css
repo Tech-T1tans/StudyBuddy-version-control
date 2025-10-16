@@ -16,11 +16,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  cursor: url('./assets/cursor.cur'), auto;
+  cursor: url('./assets/cursor.cur') 8 8, auto;
 }
 
-button, a, [role="button"], .clickable {
-  cursor: url('./assets/pointer.cur'), pointer !important;
+button, a, [role="button"], .clickable, span[onclick], div[onclick], 
+[style*="cursor: pointer"], [style*="cursor: 'pointer'"] {
+  cursor: url('./assets/pointer.cur') 8 8, pointer !important;
+}
+
+/* Add subtle glow effect behind interactive elements */
+button:hover, a:hover, [role="button"]:hover, .clickable:hover,
+span[onclick]:hover, div[onclick]:hover, [style*="cursor: pointer"]:hover {
+  filter: drop-shadow(0 0 5px rgba(255, 138, 0, 0.2));
 }
 
 body {

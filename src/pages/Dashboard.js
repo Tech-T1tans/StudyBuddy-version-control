@@ -36,21 +36,25 @@ const Dashboard = () => {
 
   // Detect current section on scroll
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (e) => {
+      const scrollContainer = e.target;
       const sections = document.querySelectorAll('[id^="section-"]');
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const scrollTop = scrollContainer.scrollTop;
+      const viewportMiddle = scrollTop + containerRect.height / 2;
 
       sections.forEach((section, index) => {
-        const sectionTop = section.offsetTop;
+        const sectionTop = section.offsetTop - 100; // Account for navbar
         const sectionBottom = sectionTop + section.offsetHeight;
 
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+        if (viewportMiddle >= sectionTop && viewportMiddle < sectionBottom) {
           setCurrentSection(index);
         }
       });
     };
 
-    const scrollContainer = document.querySelector('[style*="overflowY"]');
+    // Add scroll listener to the scrollable container
+    const scrollContainer = document.getElementById('scroll-container');
     if (scrollContainer) {
       scrollContainer.addEventListener('scroll', handleScroll);
       return () => scrollContainer.removeEventListener('scroll', handleScroll);
@@ -672,7 +676,7 @@ const Dashboard = () => {
 
 
       {/* Scrollable Content */}
-      <div style={styles.scrollContainer}>
+      <div id="scroll-container" style={styles.scrollContainer}>
         {/* Section 1: Greeting Section */}
         <div id="section-0" style={{ ...styles.section, ...styles.heroSection }}>
           <div style={styles.heroCard}>
@@ -750,19 +754,19 @@ const Dashboard = () => {
               Our AI analyzes your learning patterns to optimize your study plan.
             </p>
             
-            {/* Quick Schedule Options */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '30px', marginBottom: '40px' }}>
-              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer' }}>
+            {/* Quick Schedule Options - Horizontal Layout */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', marginTop: '30px', marginBottom: '40px', flexWrap: 'wrap' }}>
+              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer', minWidth: '180px', flex: '1', maxWidth: '220px' }}>
                 <div style={{ fontSize: '24px', marginBottom: '10px' }}>⚡</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Quick Schedule</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Generate in 30 seconds</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)', cursor: 'pointer' }}>
+              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)', cursor: 'pointer', minWidth: '180px', flex: '1', maxWidth: '220px' }}>
                 <div style={{ fontSize: '24px', marginBottom: '10px' }}>🎯</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Exam Focused</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Target specific exams</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer' }}>
+              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer', minWidth: '180px', flex: '1', maxWidth: '220px' }}>
                 <div style={{ fontSize: '24px', marginBottom: '10px' }}>📚</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Subject Based</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Organize by subjects</div>
@@ -796,24 +800,24 @@ const Dashboard = () => {
               concept explanations, and personalized study guidance powered by advanced AI.
             </p>
             
-            {/* AI Features Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginTop: '30px', marginBottom: '40px' }}>
-              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)' }}>
+            {/* AI Features - Horizontal Layout */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '30px', marginBottom: '40px', flexWrap: 'wrap' }}>
+              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', minWidth: '160px', flex: '1', maxWidth: '200px' }}>
                 <div style={{ fontSize: '28px', marginBottom: '15px' }}>💬</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--text)' }}>Ask Questions</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Get instant answers to your study questions</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)' }}>
+              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)', minWidth: '160px', flex: '1', maxWidth: '200px' }}>
                 <div style={{ fontSize: '28px', marginBottom: '15px' }}>📹</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--text)' }}>Video Summaries</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Summarize educational videos quickly</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)' }}>
+              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', minWidth: '160px', flex: '1', maxWidth: '200px' }}>
                 <div style={{ fontSize: '28px', marginBottom: '15px' }}>📄</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--text)' }}>Text Analysis</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Analyze and explain complex texts</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)' }}>
+              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)', minWidth: '160px', flex: '1', maxWidth: '200px' }}>
                 <div style={{ fontSize: '28px', marginBottom: '15px' }}>🎯</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--text)' }}>Study Tips</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Personalized learning strategies</div>
@@ -839,19 +843,19 @@ const Dashboard = () => {
               Track your progress and identify areas that need more attention.
             </p>
             
-            {/* Quiz Types */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '30px', marginBottom: '40px' }}>
-              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer' }}>
+            {/* Quiz Types - Horizontal Layout */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', marginTop: '30px', marginBottom: '40px', flexWrap: 'wrap' }}>
+              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer', minWidth: '180px', flex: '1', maxWidth: '220px' }}>
                 <div style={{ fontSize: '24px', marginBottom: '10px' }}>⚡</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Quick Quiz</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>5-10 questions, 5 mins</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)', cursor: 'pointer' }}>
+              <div style={{ backgroundColor: 'rgba(255, 200, 107, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 200, 107, 0.1)', cursor: 'pointer', minWidth: '180px', flex: '1', maxWidth: '220px' }}>
                 <div style={{ fontSize: '24px', marginBottom: '10px' }}>📚</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Subject Quiz</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Topic-specific questions</div>
               </div>
-              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer' }}>
+              <div style={{ backgroundColor: 'rgba(255, 138, 0, 0.05)', borderRadius: '15px', padding: '20px', textAlign: 'center', border: '1px solid rgba(255, 138, 0, 0.1)', cursor: 'pointer', minWidth: '180px', flex: '1', maxWidth: '220px' }}>
                 <div style={{ fontSize: '24px', marginBottom: '10px' }}>🏆</div>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Challenge Mode</div>
                 <div style={{ fontSize: '14px', color: 'var(--muted)' }}>Advanced difficulty</div>
@@ -876,7 +880,7 @@ const Dashboard = () => {
         </div>
 
         {/* Section 6: Site Info & Navigation */}
-        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '80vh', justifyContent: 'space-between', padding: '40px 30px' }}>
+        <div id="section-5" style={{ ...styles.section, ...styles.endSection, minHeight: '60vh', justifyContent: 'center', padding: '30px 20px' }}>
           <div style={{...styles.sectionCard, maxWidth: '1400px', width: '100%', padding: '60px 40px'}}>
             {/* Site Header */}
             <div style={{ textAlign: 'center', marginBottom: '60px' }}>
